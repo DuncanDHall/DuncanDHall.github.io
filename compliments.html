@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .rectangle {
+            float: left;
+            width: 33.33%;
+            height: 100vh;
+        }
+
+        .toast {
+            visibility: hidden;
+            max-width: 50px;
+            height: 50px;
+            line-height: 50px;
+            margin-bottom: 2px;
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+            transition: visibility 0.5s, opacity 0.5s linear;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toast" class="toast">This is a toast message.</div>
+    <div class="rectangle" id="rect1"></div>
+    <div class="rectangle" id="rect2"></div>
+    <div class="rectangle" id="rect3"></div>
+
+    <script>
+        const HUE_SHIFT_DEGREES = 5; // Constant for the hue shift
+
+        function generateRandomColor() {
+            // Generate random HSL values with specified ranges
+            const h = Math.floor(Math.random() * 360);
+            const s = Math.random() * 0.7 + 0.3; // Saturation between 0.3 and 1
+            const l = Math.random() * 0.6 + 0.2; // Lightness between 0.2 and 0.8
+            return `hsl(${h}, ${s * 100}%, ${l * 100}%)`;
+        }
+
+        function complementaryColor(hsl, hueShift = 0) {
+            let [h, s, l] = hsl.match(/\d+\.?\d*/g).map(Number);
+            h = (h + 180 + hueShift) % 360;
+            return `hsl(${h}, ${s.toFixed(1)}%, ${l.toFixed(1)}%)`;
+        }
+
+        let randomColor = generateRandomColor();
+        document.getElementById('rect2').style.backgroundColor = randomColor;
+
+        // Apply hue shift randomly to left or right rectangle
+        const hueShift = (Math.random() > 0.5 ? HUE_SHIFT_DEGREES : -HUE_SHIFT_DEGREES);
+        let correctRect;
+        if (Math.random() > 0.5) {
+            correctRect = 'rect3';
+            document.getElementById('rect1').style.backgroundColor = complementaryColor(randomColor, hueShift);
+            document.getElementById('rect3').style.backgroundColor = complementaryColor(randomColor);
+        } else {
+            correctRect = 'rect1';
+            document.getElementById('rect1').style.backgroundColor = complementaryColor(randomColor);
+            document.getElementById('rect3').style.backgroundColor = complementaryColor(randomColor, hueShift);
+        }
+
+        // Add event listeners to the rectangles
+        function showToast(message) {
+            let toast = document.getElementById("toast");
+            toast.innerHTML = message;
+            toast.className = "toast show";
+            setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        document.getElementById('rect1').addEventListener('click', function () {
+            if (this.id === correctRect) {
+                showToast('Correct!');
+            } else {
+                showToast('Wrong!');
+            }
+            
+        });
+
+        document.getElementById('rect3').addEventListener('click', function () {
+            if (this.id === correctRect) {
+                showToast('Correct!');
+            } else {
+                showToast('Wrong!');
+            }
+        
+        });
+    </script>
+</body>
+
+</html>
